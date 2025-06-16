@@ -76,7 +76,7 @@
 
     <ItemGroup>
       <Folder Include="Domain\Migrations\" />
-      <Folder Include="Infrastructure\" />
+      <Folder Include="Infrastructure\Services\" />
     </ItemGroup>
 
 </Project>
