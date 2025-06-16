@@ -52,3 +52,5 @@ namespace KhoraControl.Domain.Models
         public string? UsuarioAlteracao { get; set; }
 
     }
+
+}
