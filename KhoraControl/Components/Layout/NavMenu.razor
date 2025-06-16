@@ -1,27 +1,43 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">KhoraControl</a>
-    </div>
-</div>
+﻿@implements IDisposable
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+@inject NavigationManager NavigationManager
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-    </nav>
-</div>
+<MudPaper Elevation="0" Class="py-3">
+    <MudNavMenu Color="Color.Primary">
+        <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Página Inicial</MudNavLink>
+        <MudNavGroup Title="Cadastros" Expanded="false" Icon="@Icons.Material.Filled.Add">
+            <MudNavLink Href="/produto" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.ShoppingBasket">Produtos</MudNavLink>
+            <MudNavLink Href="/usuarios" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.People">Usuários</MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="Consultas" Expanded="false" Icon="@Icons.Material.Filled.Build">
+            <MudNavLink Href="/consulta/produtos" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.ScreenSearchDesktop">Consutar Produtos</MudNavLink>
+        </MudNavGroup>
+        <MudNavLink @OnClick="@Close" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Logout">Logout</MudNavLink>
+    </MudNavMenu>
+</MudPaper>
+
+@code {
+    private string? currentUrl;
+
+    protected override void OnInitialized()
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+
+    private void Close()
+    {
+        App.Current.Quit();
+    }
+}
