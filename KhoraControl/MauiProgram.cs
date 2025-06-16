@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using KhoraControl.Domain;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
 
 namespace KhoraControl
@@ -21,6 +23,11 @@ namespace KhoraControl
     		builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
 #endif
+            // Register Database
+            string dbPath = Path.Combine(FileSystem.AppDataDirectory, "ControleDeValidades.db");
+
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlite($"Data Source={dbPath}"));
 
             // Register services
             builder.Services.AddMudServices();
