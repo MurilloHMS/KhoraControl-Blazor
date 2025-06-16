@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KhoraControl.Domain.Models
 {
+    [Table("Produtos")]
     public class Produto : ValidationClass
     {
         [Key]
