@@ -1,29 +1,54 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 
 namespace KhoraControl.Domain.Models
 {
-    public class Produto : Entidades
+    public class Produto : ValidationClass
     {
         [Key]
-        public int PRONID_PRO { get; set; } //ID Produto
-        [Required(ErrorMessage = "É necessario preencher a data de validade")]
-        public DateTime PRODDATCAD { get; set; } //Data Lançamento
-        public string? PROCCODINT { get; set; } // Codigo interno
-        [Required(ErrorMessage = "É necessario preencher a descrição do produto")]
-        public string PROCDESCR { get; set; } //Descrição do produto
-        public string? PROCREF { get; set; } //Referencia Fornecedor
-        [Required(ErrorMessage = "É necessario preencher o fornecedor do produto")]
-        public string PROCFOR { get; set; } //Fornecedor
-        [Required(ErrorMessage = "É necessario preencher a quantidade do produto")]
-        [RegularExpression("([0-9]+)", ErrorMessage = "A Quantidade deve conter apenas Números")]
-        public int PRONQUANT { get; set; } //Quantidade
-        public DateTime PRODDATVAL { get; set; }//Data Validade
-        public string? PROCSTAT { get; set; } // Status
-        public string? PROCNNUMNF { get; set; } //Número NFe
-        public DateTime? PRODDATALT { get; set; }
-        public string? PROCUSRCAD { get; set; }
-        public string? PROCUSRALT { get; set; }
-	}	    
+        [Column("PRONID_PRO")]
+        public int Id { get; set; } // ID Produto
 
-}
+        [Required(ErrorMessage = "É necessário preencher a data de validade")]
+        [Column("PRODDATCAD")]
+        public DateTime DataCadastro { get; set; } // Data Lançamento
+
+        [Column("PROCCODINT")]
+        public string? CodigoInterno { get; set; } // Código interno
+
+        [Required(ErrorMessage = "É necessário preencher a descrição do produto")]
+        [Column("PROCDESCR")]
+        public string Descricao { get; set; } // Descrição do produto
+
+        [Column("PROCREF")]
+        public string? ReferenciaFornecedor { get; set; } // Referência Fornecedor
+
+        [Required(ErrorMessage = "É necessário preencher o fornecedor do produto")]
+        [Column("PROCFOR")]
+        public string Fornecedor { get; set; }
+
+        [Required(ErrorMessage = "É necessário preencher a quantidade do produto")]
+        [RegularExpression("([0-9]+)", ErrorMessage = "A Quantidade deve conter apenas Números")]
+        [Column("PRONQUANT")]
+        public int Quantidade { get; set; }
+
+        [Column("PRODDATVAL")]
+        public DateTime DataValidade { get; set; }
+
+        [Column("PROCSTAT")]
+        public string? Status { get; set; }
+
+        [Column("PROCNNUMNF")]
+        public string? NumeroNotaFiscal { get; set; }
+
+        [Column("PRODDATALT")]
+        public DateTime? DataAlteracao { get; set; }
+
+        [Column("PROCUSRCAD")]
+        public string? UsuarioCadastro { get; set; }
+
+        [Column("PROCUSRALT")]
+        public string? UsuarioAlteracao { get; set; }
+
+    }

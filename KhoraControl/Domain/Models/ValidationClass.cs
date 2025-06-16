@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace KhoraControl.Domain.Models
 {
-    public abstract class Entidades
+    public abstract class ValidationClass
     {
         public void ValidaClasse()
         {

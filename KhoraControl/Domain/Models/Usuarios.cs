@@ -5,7 +5,7 @@ using System.Text;
 
 namespace KhoraControl.Domain.Models
 {
-    public class Usuarios : Entidades
+    public class Usuarios : ValidationClass
     {
         [Key]
         public int ID { get; set; }
