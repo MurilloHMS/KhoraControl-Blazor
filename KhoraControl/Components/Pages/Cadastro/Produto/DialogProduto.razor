@@ -1,0 +1,48 @@
+@using KhoraControl.Infrastructure.Services
+@inject ISnackbar Snackbar
+@inject ProdutoService ProdutoService
+
+<MudDialog>
+    <DialogContent>
+        <MudText>@ContentText</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="@Color" Variant="Variant.Filled" OnClick="Submit">@ButtonText</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public string ContentText { get; set; }
+
+    [Parameter]
+    public string ButtonText { get; set; }
+
+    [Parameter]
+    public Color Color { get; set; }
+
+    [Parameter]
+    public Domain.Models.Produto Produto { get; set; }
+
+    private async Task Submit()
+    {
+        try
+        {
+            await ProdutoService.DeleteAsync(Produto);
+            Snackbar.Add("Produto Deletado", Severity.Success);
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add("Ocorreu um erro ao deletar o produto", Severity.Error);
+            throw;
+        }
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+    
+}

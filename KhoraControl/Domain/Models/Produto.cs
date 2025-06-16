@@ -35,7 +35,7 @@ namespace KhoraControl.Domain.Models
         public int Quantidade { get; set; }
 
         [Column("PRODDATVAL")]
-        public DateTime DataValidade { get; set; }
+        public DateTime? DataValidade { get; set; }
 
         [Column("PROCSTAT")]
         public string? Status { get; set; }
@@ -51,7 +51,6 @@ namespace KhoraControl.Domain.Models
 
         [Column("PROCUSRALT")]
         public string? UsuarioAlteracao { get; set; }
-
     }
 
 }

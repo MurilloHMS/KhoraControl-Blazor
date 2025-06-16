@@ -1,0 +1,82 @@
+@using KhoraControl.Infrastructure.Services
+@inject ISnackbar Snackbar
+@inject ProdutoService ProdutoService
+
+<MudDialog>
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs="12" sm="12">
+                <MudForm @ref="form" @bind-IsValid="isFormValid">
+                    <MudDatePicker Label="Data da Validade" @bind-Date="@_produto.DataValidade" Placeholder="Selecione uma Data" Required="true" />
+                    <MudTextField Label="Descrição" @bind-Value="_produto.Descricao" Required="true" />
+                    <MudTextField Label="Fornecedor" @bind-Value="_produto.Fornecedor" Required="true" />
+                    <MudTextField Label="Codigo Interno" @bind-Value="_produto.CodigoInterno" Required="true" />
+                    <MudTextField Label="Referencia" @bind-Value="_produto.ReferenciaFornecedor" />
+                    <MudTextField Label="Número NFe" @bind-Value="_produto.NumeroNotaFiscal" />
+                    <MudCheckBox T="bool" Label="Vendido" @bind-Value="IsSelled" />
+                </MudForm>
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="CloseDialog" Color="Color.Secondary">Cancelar</MudButton>
+        <MudButton OnClick="Save" Color="Color.Primary" Disabled="!isFormValid">Salvar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private Domain.Models.Produto _produto = new();
+    private MudForm form;
+    private bool isFormValid;
+
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public Domain.Models.Produto produto { get; set; }
+
+    private bool IsSelled
+    {
+        get => string.Equals(_produto.Status?.Trim(), "Vendido", StringComparison.OrdinalIgnoreCase);
+        set => _produto.Status = value ? "Vendido" : "";
+    }
+
+    protected override void OnInitialized()
+    {
+        if (produto is not null)
+        {
+            _produto = produto;
+        }
+    }
+
+    private void CloseDialog()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task Save()
+    {
+        try
+        {
+            _produto.DataAlteracao = DateTime.Now;
+
+            if (produto is not null)
+            {
+                await ProdutoService.UpdateAsync(_produto);
+                Snackbar.Add("Produto Atualizado com Sucesso!", Severity.Success);
+            }
+            else
+            {
+                _produto.DataCadastro = DateTime.Now;
+                await ProdutoService.SaveAsync(_produto);
+                Snackbar.Add("Produto Cadastrado com Sucesso!", Severity.Success);
+            }
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Ocorreu um erro ao cadastrar o Produto: {e.Message}", Severity.Error);
+            throw;
+        }
+
+        MudDialog?.Close(DialogResult.Ok(_produto));
+    }
+}
