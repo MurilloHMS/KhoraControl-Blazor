@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using MudBlazor.Services;
 
 namespace KhoraControl
 {
@@ -20,6 +21,11 @@ namespace KhoraControl
     		builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
 #endif
+
+            // Register services
+            builder.Services.AddMudServices();
+
+
 
             return builder.Build();
         }
