@@ -9,6 +9,7 @@
                 <MudForm @ref="form" @bind-IsValid="isFormValid">
                     <MudDatePicker Label="Data da Validade" @bind-Date="@_produto.DataValidade" Placeholder="Selecione uma Data" Required="true" />
                     <MudTextField Label="Descrição" @bind-Value="_produto.Descricao" Required="true" />
+                    <MudNumericField Label="Quantidade" @bind-Value="_produto.Quantidade" Required="true"/>
                     <MudTextField Label="Fornecedor" @bind-Value="_produto.Fornecedor" Required="true" />
                     <MudTextField Label="Codigo Interno" @bind-Value="_produto.CodigoInterno" Required="true" />
                     <MudTextField Label="Referencia" @bind-Value="_produto.ReferenciaFornecedor" />
