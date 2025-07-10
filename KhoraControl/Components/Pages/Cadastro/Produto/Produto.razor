@@ -23,7 +23,7 @@
     <Columns>
         <PropertyColumn Property="x => x.CodigoInterno" Title="Código Interno" Sortable="true" Filterable="true"/>
         <PropertyColumn Property="x => x.DataValidade" Title="Validade" Sortable="true" Filterable="true" Format="dd/MM/yyyy"/>
-        <TemplateColumn Title="Dias p/ Vencer" Sortable="false" Filterable="false">
+        <TemplateColumn Title="Dias p/ Vencer" Sortable="true" Filterable="true">
             <CellTemplate Context="context">
                 @{
                     if (context.Item.DataValidade.HasValue)
@@ -56,20 +56,40 @@
         <MudDataGridPager T="Domain.Models.Produto" />
     </PagerContent>
 </MudDataGrid>
-
+<MudStack Row="true">
+    <MudSwitch T="bool" Value="@_showSelled" ValueChanged="OnCheckedChanged" Color="Color.Primary">Mostrar Vendidos</MudSwitch>
+</MudStack>
 @code {
     private string _searchString = "";
     private IEnumerable<Domain.Models.Produto> _produtos = new List<Domain.Models.Produto>();
     private bool _isLoading = false;
 
-    private IEnumerable<Domain.Models.Produto> _produtosFiltrados =>
-        string.IsNullOrWhiteSpace(_searchString)
-            ? _produtos
-            : _produtos.Where(x =>
-                x.Descricao.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
-                x.Fornecedor.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
-                x.CodigoInterno.Contains(_searchString, StringComparison.OrdinalIgnoreCase)
+    private bool _showSelled = false;
+
+    private IEnumerable<Domain.Models.Produto> _produtosFiltrados
+    {
+        get
+        {
+            var produtosFiltrados = _produtos;
+
+            if (!_showSelled)
+            {
+                produtosFiltrados = produtosFiltrados.Where(p => p.Status != "Vendido");
+            }
+            
+            if (!string.IsNullOrWhiteSpace(_searchString))
+            {
+                produtosFiltrados = produtosFiltrados.Where(x =>
+                    x.Descricao.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
+                    x.Fornecedor.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
+                    x.CodigoInterno.Contains(_searchString, StringComparison.OrdinalIgnoreCase)
                 );
+            }
+
+            return produtosFiltrados;
+        }
+    }
+        
 
     protected override async Task OnInitializedAsync()
     {
@@ -142,6 +162,12 @@
         {
             await LoadData();
         }
+    }
+
+    private async Task OnCheckedChanged(bool value)
+    {
+        _showSelled = value;
+        StateHasChanged();
     }
 
 }
