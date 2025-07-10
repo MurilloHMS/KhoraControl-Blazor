@@ -58,6 +58,12 @@ namespace KhoraControl
 
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddScoped<ProdutoService>();
+            
+            using (var scope = builder.Services.BuildServiceProvider().CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                context.Database.Migrate();
+            }
 
             return builder.Build();
         }

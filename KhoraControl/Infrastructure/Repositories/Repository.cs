@@ -21,7 +21,10 @@ namespace KhoraControl.Infrastructure.Repositories
             _dbSet = context.Set<T>();
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync() => await _dbSet.ToListAsync();
+        public async Task<IEnumerable<T>> GetAllAsync()
+        {
+            return await _dbSet.ToListAsync();
+        }
 
         public async Task<T?> GetByIdAsync(int id) => await _dbSet.FindAsync(id);
 

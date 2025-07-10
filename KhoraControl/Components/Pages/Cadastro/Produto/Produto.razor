@@ -3,6 +3,7 @@
 
 @inject ProdutoService ProdutoService
 @inject IDialogService DialogService
+@inject ISnackbar Snackbar
 
 <MudPaper Elevation="1">
     <MudToolBar>
@@ -68,7 +69,7 @@
         }
         catch (Exception ex)
         {
-
+            Snackbar.Add(ex.Message);
         }
         finally
         {
