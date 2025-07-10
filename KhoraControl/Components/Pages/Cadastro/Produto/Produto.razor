@@ -23,8 +23,25 @@
     <Columns>
         <PropertyColumn Property="x => x.CodigoInterno" Title="Código Interno" Sortable="true" Filterable="true"/>
         <PropertyColumn Property="x => x.DataValidade" Title="Validade" Sortable="true" Filterable="true" Format="dd/MM/yyyy"/>
+        <TemplateColumn Title="Dias p/ Vencer" Sortable="false" Filterable="false">
+            <CellTemplate Context="context">
+                @{
+                    if (context.Item.DataValidade.HasValue)
+                    {
+                        var diasParaVencer = (context.Item.DataValidade.Value.Date - DateTime.Today).Days;
+                        <MudText Color="@(diasParaVencer <= 0 ? Color.Error : diasParaVencer <= 7 ? Color.Warning : Color.Default)">
+                            @diasParaVencer dias
+                        </MudText>
+                    }
+                    else
+                    {
+                        <i>Sem validade</i>
+                    }
+                }
+            </CellTemplate>
+        </TemplateColumn>
+
         <PropertyColumn Property="x => x.Descricao" Title="Descrição" Sortable="true" Filterable="true"/>
-        <PropertyColumn Property="x => x.Status" Title="Status" Sortable="true" Filterable="true"/>
         <PropertyColumn Property="x => x.Fornecedor" Title="Fornecedor" Sortable="true" Filterable="true"/>
         <PropertyColumn Property="x => x.Quantidade" Title="Quantidade" Sortable="true" Filterable="true"/>
     <TemplateColumn Hidden="false" CellClass="d-flex justify-center">
