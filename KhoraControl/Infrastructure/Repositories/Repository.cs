@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using KhoraControl.Domain;
+using KhoraControl.Domain.Data;
 using KhoraControl.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 

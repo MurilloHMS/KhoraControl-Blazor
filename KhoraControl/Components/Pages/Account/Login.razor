@@ -1,0 +1,84 @@
+﻿@page "/account/login"  
+@using KhoraControl.Domain.Data  
+@using KhoraControl.Domain.Models.ViewModels  
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Http  
+@using System.Security.Claims  
+@using Microsoft.AspNetCore.Authentication.Cookies 
+@using Microsoft.EntityFrameworkCore
+@inject AppDbContext dbContext
+@inject NavigationManager navigationManager
+
+<div class="row">  
+	<div class="col-lg-4 offset-lg-4 pt-4 pb-4 border">  
+		<EditForm Model="Model" OnValidSubmit="Authenticate" FormName="LoginForm">
+			<DataAnnotationsValidator />
+			<div class="mb-3 text-center flex-column">  
+				<img src="assets/images/avatar.png" style="max-height:5rem"/>  
+				<h3>LOGIN</h3>  
+			</div>  
+			<div class="mb-3">  
+				<label>User Name</label>  
+				<InputText @bind-Value="Model.Username" class="form-control" placeholder="Username"/>  
+				<ValidationMessage For="() => Model.Username"/>  
+			</div>  
+			<div class="mb-3">  
+				<label>Password</label>  
+				<InputText @bind-Value="Model.Password" placeholder="Password" type="password" class="form-control"/>  
+				<ValidationMessage For="() => Model.Password"/>  
+			</div>  
+			<div class="mb-3 text-center">  
+				<span class="text-danger">@errorMessage</span>  
+			</div>  
+			<div class="mb-3 d-grid gap-2">  
+				<button type="submit" class="btn btn-primary">Login</button>  
+			</div>  
+		</EditForm>  
+	</div>  
+</div>  
+
+@code {
+	[CascadingParameter]  
+	public HttpContext? HttpContext { get; set; }
+
+	[SupplyParameterFromForm]
+	public LoginViewModel Model { get; set; } = new();
+
+	private string? errorMessage;  
+
+	private async Task Authenticate()  
+	{  
+		if(string.IsNullOrWhiteSpace(Model.Username) ||  
+			string.IsNullOrWhiteSpace(Model.Password))  
+		{  
+			errorMessage = "Usuario ou senha incorretos";  
+			return;  
+		}  
+
+		var userAccount = dbContext.UserAccounts.Where(x => x.UserName == Model.Username).FirstOrDefault();  
+		if(userAccount is null || userAccount.Password != Model.Password)  
+		{  
+			errorMessage = "Usuario ou senha incorretos";  
+			return;  
+		}  
+
+		var claims = new List<Claim>  
+		{  
+			new Claim(ClaimTypes.Name, Model.Username)  
+		};  
+
+		var userAccountPolicies = await dbContext.UserAccountPolicies  
+			.Where(x => x.UserAccountId == userAccount.Id && x.IsEnabled).ToListAsync();
+		foreach (var userAccountPolicy in userAccountPolicies)
+			claims.Add(new Claim(userAccountPolicy.UserPolicy, "true"));
+
+		/* Add Policies */  
+		var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+		var principal = new ClaimsPrincipal(identity);
+		//await HttpContext!.SignInAsync(principal);
+
+		var customProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+		customProvider.MarkUserAsAuthenticated(Model.Username, claims);
+		navigationManager.NavigateTo("/");
+	}  
+}

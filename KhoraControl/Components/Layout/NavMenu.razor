@@ -5,14 +5,23 @@
 <MudPaper Elevation="0" Class="py-3">
     <MudNavMenu Color="Color.Primary">
         <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Página Inicial</MudNavLink>
-        <MudNavGroup Title="Cadastros" Expanded="false" Icon="@Icons.Material.Filled.Add">
-            <MudNavLink Href="Produto" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.ShoppingBasket">Produtos</MudNavLink>
-            <MudNavLink Href="usuarios" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.People">Usuários</MudNavLink>
-        </MudNavGroup>
-        <MudNavGroup Title="Consultas" Expanded="false" Icon="@Icons.Material.Filled.Build">
-            <MudNavLink Href="consulta/produtos" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.ScreenSearchDesktop">Consutar Produtos</MudNavLink>
-        </MudNavGroup>
-        <MudIconButton OnClick="Close" Icon="@Icons.Material.Filled.Logout"/>
+        @* <authorizeView Policy>*@
+        <AuthorizeView>
+            <Authorized>
+                <MudNavGroup Title="Cadastros" Expanded="false" Icon="@Icons.Material.Filled.Add">
+                <MudNavLink Href="Produto" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.ShoppingBasket">Produtos</MudNavLink>
+                <MudNavLink Href="usuarios" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.People">Usuários</MudNavLink>
+                </MudNavGroup>
+                <MudNavGroup Title="Consultas" Expanded="false" Icon="@Icons.Material.Filled.Build">
+                    <MudNavLink Href="consulta/produtos" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.ScreenSearchDesktop">Consutar Produtos</MudNavLink>
+                </MudNavGroup>
+                <MudNavLink Href="account/logout" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Logout">Logout</MudNavLink>
+            </Authorized>
+            <NotAuthorized>
+                <MudNavLink Href="account/login" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Login">Login</MudNavLink>
+            </NotAuthorized>
+        </AuthorizeView>
+        
     </MudNavMenu>
 </MudPaper>
 
