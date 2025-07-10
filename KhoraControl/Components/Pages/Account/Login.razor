@@ -4,10 +4,13 @@
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Http  
 @using System.Security.Claims  
+@using KhoraControl.Infrastructure.Services
 @using Microsoft.AspNetCore.Authentication.Cookies 
 @using Microsoft.EntityFrameworkCore
 @inject AppDbContext dbContext
 @inject NavigationManager navigationManager
+@inject AuthenticationStateProvider authenticationStateProvider
+
 
 <div class="row">  
 	<div class="col-lg-4 offset-lg-4 pt-4 pb-4 border">  
@@ -78,7 +81,7 @@
 		//await HttpContext!.SignInAsync(principal);
 
 		var customProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
-		customProvider.MarkUserAsAuthenticated(Model.Username, claims);
+		customProvider.MarkUserAsAuthenticated(Model.Username);
 		navigationManager.NavigateTo("/");
 	}  
 }
