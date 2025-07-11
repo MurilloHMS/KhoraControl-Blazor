@@ -9,7 +9,7 @@
 <MudPaper Elevation="1">
     <MudToolBar Dense="true" Gutters="true">
         <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled">
-            <MudButton StartIcon="@Icons.Material.Filled.Add">Novo Usuário</MudButton>
+            <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="(() => DialogAsync())">Novo Usuário</MudButton>
             <MudIconButton Icon="@Icons.Material.Filled.Update"/>
         </MudButtonGroup>
     </MudToolBar>
@@ -22,7 +22,11 @@
     <Columns>
         <PropertyColumn Property="x => x.UserName" Title="Nome" Sortable="true" Filterable="true"/>
         <TemplateColumn Hidden="false" CellClass="d-flex justify-center">
-        
+            <CellTemplate>
+                <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Edit" OnClick="@(() => DialogAsync(@context.Item, true))" />
+                <MudSpacer />
+                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Filled.Delete" OnClick="@(() => Delete(@context.Item))" />
+            </CellTemplate>
         </TemplateColumn>
     </Columns>
     <PagerContent>
@@ -50,7 +54,7 @@
             return usersFiltered;
         }
     }
-    
+
     protected override async Task OnInitializedAsync()
     {
         await LoadData();
@@ -71,6 +75,52 @@
         finally
         {
             _isLoading = false;
+        }
+    }
+
+    private async Task DialogAsync(UserAccount? user = null, bool update = false)
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        IDialogReference dialog;
+        if (update && user != null)
+        {
+            var parametros = new DialogParameters<CadastrarUsuario>
+            {
+                { x => x.user, user }
+            };
+
+            dialog = await DialogService.ShowAsync<CadastrarUsuario>("Cadastro de Usuários", parametros, options);
+        }
+        else
+        {
+            dialog = await DialogService.ShowAsync<CadastrarUsuario>("Cadastro de Usuários", options);
+        }
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await LoadData();
+        }
+    }
+
+    private async Task Delete(UserAccount user)
+    {
+        var parametros = new DialogParameters<DialogUsuario>
+        {
+            { x => x.ContentText, "Tem certeza que você quer deletar este registro?, este processo não pode ser revertido!" },
+            { x => x.ButtonText, "Deletar" },
+            { x => x.Color, Color.Error },
+            { x => x.User, user }
+        };
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = await DialogService.ShowAsync<DialogUsuario>("Deletar", parametros, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await LoadData();
         }
     }
 }

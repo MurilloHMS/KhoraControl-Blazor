@@ -1,0 +1,111 @@
+﻿@inject ISnackbar Snackbar
+@inject UserService Service
+
+<MudDialog>
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs="12" sm="12">
+                <MudForm @ref="form" @bind-IsValid="isFormValid">
+                    <MudTextField Label="Usuário" @bind-Value="_user.UserName" Required="true" />
+                    <MudTextField T="string"
+                                  Label="Senha"
+                                  @bind-Value="_user.Password"
+                                  InputType="@passwordInputType"
+                                  Required="true"
+                                  Adornment="Adornment.End"
+                                  AdornmentIcon="@passwordVisibilityIcon"
+                                  OnAdornmentClick="@TogglePasswordVisibility" />
+                    <MudTextField T="string"
+                                  Label="Confirmação de Senha"
+                                  @bind-Value="confirmPassword"
+                                  InputType="@confirmPasswordInputType"
+                                  Required="true"
+                                  Adornment="Adornment.End"
+                                  AdornmentIcon="@confirmPasswordVisibilityIcon"
+                                  OnAdornmentClick="@ToggleConfirmPasswordVisibility" />
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <MudText Color="Color.Error">@errorMessage</MudText>
+                    }
+                </MudForm>
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="CloseDialog" Color="Color.Secondary">Cancelar</MudButton>
+        <MudButton OnClick="Save" Color="Color.Primary" Disabled="!isFormValid">Salvar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private UserAccount _user = new();
+    private MudForm form;
+    private bool isFormValid;
+
+    private string errorMessage { get; set; } = string.Empty;
+    private string confirmPassword { get; set; }
+
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+    [Parameter] public UserAccount user { get; set; }
+
+    // Controle de visibilidade da senha
+    private bool isPasswordVisible = false;
+    private bool isConfirmPasswordVisible = false;
+
+    private InputType passwordInputType => isPasswordVisible ? InputType.Text : InputType.Password;
+    private string passwordVisibilityIcon => isPasswordVisible ? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility;
+
+    private InputType confirmPasswordInputType => isConfirmPasswordVisible ? InputType.Text : InputType.Password;
+    private string confirmPasswordVisibilityIcon => isConfirmPasswordVisible ? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility;
+
+    private void TogglePasswordVisibility()
+    {
+        isPasswordVisible = !isPasswordVisible;
+    }
+
+    private void ToggleConfirmPasswordVisibility()
+    {
+        isConfirmPasswordVisible = !isConfirmPasswordVisible;
+    }
+
+    protected override void OnInitialized()
+    {
+        if (user is not null)
+        {
+            _user = user;
+        }
+    }
+
+    private void CloseDialog() => MudDialog.Cancel();
+
+    private async Task Save()
+    {
+        try
+        {
+            if (_user.Password != confirmPassword)
+            {
+                errorMessage = "As senhas não coincidem.";
+                return;
+            }
+
+            if (user is not null)
+            {
+                await Service.UpdateUserAsync(_user);
+                Snackbar.Add("Usuário atualizado com sucesso!", Severity.Success);
+            }
+            else
+            {
+                await Service.AddUserAsync(_user);
+                Snackbar.Add("Usuário salvo com sucesso!", Severity.Success);
+            }
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Erro ao salvar usuário: {e.Message}", Severity.Error);
+            throw;
+        }
+
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+}
