@@ -1,26 +1,41 @@
 ﻿@inherits LayoutComponentBase
 
+@inject LicencaService LicencaService
+@inject NavigationManager NavigationManager
+
 <MudThemeProvider IsDarkMode="@_isDarkMode" Theme="_theme" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudLayout>
     <MudAppBar Elevation="1" Dense="true" Color="Color.Primary">
-        <MudIconButton Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" Icon="@Icons.Material.Filled.Menu"></MudIconButton>
+        <MudIconButton Edge="Edge.Start" OnClick="@DrawerToggle" Icon="@Icons.Material.Filled.Menu" />
         <MudText Typo="Typo.h6" Class="ml-3">KhoraControl</MudText>
         <MudSpacer />
-        <MudSwitch @bind-Value="_isDarkMode" ThumbIcon="@(_isDarkMode==true ? Icons.Material.Filled.ModeNight : Icons.Material.Filled.LightMode)" Color="@(_isDarkMode==true ? Color.Dark : Color.Inherit)"></MudSwitch>
+        <MudSwitch @bind-Value="_isDarkMode" ThumbIcon="@(_isDarkMode ? Icons.Material.Filled.ModeNight : Icons.Material.Filled.LightMode)" Color="@(_isDarkMode ? Color.Dark : Color.Inherit)" />
         <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Edge="Edge.End" Href="https://github.com/MurilloHMS" Target="_blank" />
     </MudAppBar>
-    <MudContainer Class="mud-height-full">
-        <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Breakpoint="Breakpoint.Lg" MiniWidth="50px" Elevation="1" Variant="DrawerVariant.Mini" OpenMiniOnHover="true">
-            <NavMenu />
-        </MudDrawer>
-    </MudContainer>
-    <MudMainContent Class="mt-16 pa-4">
-        @Body
-    </MudMainContent>
+
+    @if (_isLoading)
+    {
+        <MudProgressCircular Indeterminate="true" Size="Size.Large" Class="m-4" />
+    }
+    else
+    {
+        <MudContainer Class="mud-height-full">
+            <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Breakpoint="Breakpoint.Lg" MiniWidth="50px" Elevation="1" Variant="DrawerVariant.Mini" OpenMiniOnHover="true">
+                @if (_isActive)
+                {
+                    <NavMenu />
+                }
+            </MudDrawer>
+        </MudContainer>
+        <MudMainContent Class="mt-16 pa-4">
+            @Body
+        </MudMainContent>
+    }
 </MudLayout>
+
 <div id="blazor-error-ui">
     Ocorreu um erro desconhecido.
     <a href="" class="reload">Recarregar página</a>
@@ -31,11 +46,29 @@
     private MudTheme _theme = new();
     private bool _isDarkMode;
 
+    private bool _isActive = true;
+    private bool _isLoading = true;
+
     private bool _drawerOpen = false;
 
     private void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isActive = await LicencaService.VerificarLicencaAsync();
+        _isLoading = false;
+
+        var uri = NavigationManager.Uri;
+        var baseUri = NavigationManager.BaseUri;
+        var relativeUri = uri.Replace(baseUri, "/");
+
+        if (!_isActive && relativeUri != "/licenca-invalida")
+        {
+            NavigationManager.NavigateTo("/licenca-invalida", forceLoad: true);
+        }
     }
 
 }

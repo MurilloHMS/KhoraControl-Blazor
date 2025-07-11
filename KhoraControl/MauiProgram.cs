@@ -60,13 +60,16 @@ namespace KhoraControl
             builder.Services.AddScoped<ProdutoService>();
             builder.Services.AddScoped<IUserAccountPolicyRepository, UserAccountPolicyRepository>();
             builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<LicencaService>();
+            
+            builder.Services.AddSingleton(new HttpClient());
             
             using (var scope = builder.Services.BuildServiceProvider().CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                 context.Database.Migrate();
             }
-
+            
             return builder.Build();
         }
     }
