@@ -32,7 +32,7 @@
     <Columns>
         <PropertyColumn Property="x => x.CodigoInterno" Title="Código Interno" Sortable="true" Filterable="true"/>
         <PropertyColumn Property="x => x.DataValidade" Title="Validade" Sortable="true" Filterable="true" Format="dd/MM/yyyy"/>
-        <TemplateColumn Title="Dias p/ Vencer" Sortable="true" Filterable="true">
+        <TemplateColumn Title="Dias p/ Vencer" Sortable="false" Filterable="false">
             <CellTemplate Context="context">
                 @{
                     if (context.Item.DataValidade.HasValue)
