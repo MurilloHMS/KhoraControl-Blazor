@@ -1,4 +1,10 @@
 @page "/Usuarios"
+@using KhoraControl.Domain.Models.Entities
+@using KhoraControl.Infrastructure.Services
+
+@inject UserService Service
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
 
 <MudPaper Elevation="1">
     <MudToolBar Dense="true" Gutters="true">
@@ -8,7 +14,63 @@
         </MudButtonGroup>
     </MudToolBar>
 </MudPaper>
+<br><br>
+
+<MudText Typo="Typo.h5" Align="Align.Center">Usuários</MudText>
+<MudDataGrid Items="@_usersFiltered" T="UserAccount" Hover="true" Bordered="true" Striped="true" Dense="true"
+             SortMode="SortMode.Multiple" Filterable="true" Virtualize="true" Loading="_isLoading">
+    <Columns>
+        <PropertyColumn Property="x => x.UserName" Title="Nome" Sortable="true" Filterable="true"/>
+        <TemplateColumn Hidden="false" CellClass="d-flex justify-center">
+        
+        </TemplateColumn>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="UserAccount" />
+    </PagerContent>
+</MudDataGrid>
 
 @code {
+    private string _searchString = "";
+    private bool _isLoading = false;
+    private IEnumerable<UserAccount> _users = new List<UserAccount>();
+
+    private IEnumerable<UserAccount> _usersFiltered
+    {
+        get
+        {
+            var usersFiltered = _users;
+
+            if (!string.IsNullOrWhiteSpace(_searchString))
+            {
+                usersFiltered = usersFiltered.Where(x =>
+                    x.UserName.Contains(_searchString, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return usersFiltered;
+        }
+    }
     
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            _isLoading = true;
+            _users = await Service.GetAllUsersAsync();
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
 }
