@@ -10,6 +10,15 @@
         <MudButton StartIcon="@Icons.Material.Outlined.Add" Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => DialogAsync())">Novo</MudButton>
         <MudIconButton OnClick="@(() => LoadData())" Icon="@Icons.Material.Outlined.Update" Variant="Variant.Filled" Color="Color.Primary"/>
         <MudSpacer/>
+        <MudSelect T="int?" Label="Filtrar por vencimento (dias)" @bind-Value="_diasParaVencimento" Style="width: 250px;" Dense="true" Margin="Margin.Dense">
+            <MudSelectItem T="int?" Value="@(null as int?)">Todos</MudSelectItem>
+            <MudSelectItem T="int?" Value="7">Até 7 dias</MudSelectItem>
+            <MudSelectItem T="int?" Value="15">Até 15 dias</MudSelectItem>
+            <MudSelectItem T="int?" Value="30">Até 30 dias</MudSelectItem>
+            <MudSelectItem T="int?" Value="60">Até 60 dias</MudSelectItem>
+            <MudSelectItem T="int?" Value="90">Até 90 dias</MudSelectItem>
+        </MudSelect>
+        <MudSpacer/>
         <MudTextField T="string" Label="Buscar Produto" 
                       HelperText="Digite o nome de um produto para buscar" 
                       @bind-Value="_searchString" 
@@ -57,7 +66,7 @@
     </PagerContent>
 </MudDataGrid>
 <MudStack Row="true">
-    <MudSwitch T="bool" Value="@_showSelled" ValueChanged="OnCheckedChanged" Color="Color.Primary">Mostrar Vendidos</MudSwitch>
+    <MudSwitch T="bool" Value="@_showSelled" ValueChanged="OnCheckedChanged" Color="Color.Primary" >Mostrar Vendidos</MudSwitch>
 </MudStack>
 @code {
     private string _searchString = "";
@@ -65,6 +74,8 @@
     private bool _isLoading = false;
 
     private bool _showSelled = false;
+    private int? _diasParaVencimento = null;
+
 
     private IEnumerable<Domain.Models.Produto> _produtosFiltrados
     {
@@ -83,6 +94,18 @@
                     x.Descricao.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
                     x.Fornecedor.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
                     x.CodigoInterno.Contains(_searchString, StringComparison.OrdinalIgnoreCase)
+                );
+            }
+            
+            if (_diasParaVencimento.HasValue)
+            {
+                var dias = _diasParaVencimento.Value;
+                var hoje = DateTime.Today;
+
+                produtosFiltrados = produtosFiltrados.Where(p =>
+                    p.DataValidade.HasValue &&
+                    (p.DataValidade.Value.Date - hoje).TotalDays <= dias &&
+                    (p.DataValidade.Value.Date - hoje).TotalDays >= 0
                 );
             }
 
