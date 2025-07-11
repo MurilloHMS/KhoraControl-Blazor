@@ -1,11 +1,36 @@
 ﻿@page "/"
 
-<MudText Typo="Typo.h5">Seja bem vindo ao Khora Control </MudText>
-
-Controle de validades
-
-@code{
-
-    
-
-}
+<AuthorizeView>
+    <NotAuthorized>
+        <MudText Typo="Typo.h5">Seja bem-vindo ao Khora Control</MudText>
+        Controle de validades
+    </NotAuthorized>
+    <Authorized>
+        <MudGrid>
+            <MudItem xs="12" sm="6" md="3">
+                <MudPaper Elevation="3" Class="pa-4">
+                    <MudText Typo="Typo.h6" Align="Align.Center">Total de Produtos</MudText>
+                    <MudText Align="Align.Center">2</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudPaper Elevation="3" Class="pa-4">
+                    <MudText Typo="Typo.h6" Align="Align.Center">Quant. Produtos Próximo a vencer</MudText>
+                    <MudText Align="Align.Center">5</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudPaper Elevation="3" Class="pa-4">
+                    <MudText Typo="Typo.h6" Align="Align.Center">Quant. Produtos Vencidos</MudText>
+                    <MudText Align="Align.Center">5</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudPaper Elevation="3" Class="pa-4">
+                    <MudText Typo="Typo.h6" Align="Align.Center">Quant. Produtos Vendidos</MudText>
+                    <MudText Align="Align.Center">6</MudText>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </Authorized>
+</AuthorizeView>
