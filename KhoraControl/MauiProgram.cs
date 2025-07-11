@@ -58,6 +58,8 @@ namespace KhoraControl
 
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddScoped<ProdutoService>();
+            builder.Services.AddScoped<IUserAccountPolicyRepository, UserAccountPolicyRepository>();
+            builder.Services.AddScoped<UserService>();
             
             using (var scope = builder.Services.BuildServiceProvider().CreateScope())
             {
